@@ -298,26 +298,26 @@ void el_calc(El *el) { // pass in root first!!!!
     el->calc_w = el->width;
     el->calc_h = el->height;
   } else {
-    el->calc_x = el->parent->calc_x + el->x;
-    el->calc_y = el->parent->calc_y + el->y;
-    
-    if(el->x < 0) el->calc_x += el->parent->calc_w;
-    if(el->y < 0) el->calc_y += el->parent->calc_h;
+    el->calc_x = el->parent->calc_x;
+    el->calc_y = el->parent->calc_y;
     
     if(el->width  < 0) el->calc_w
-      = (float)el->parent->calc_w * ((float)el->width / 100.0);
+      = (float)el->parent->calc_w * ((float)el->width / -100.0);
     else el->calc_w = el->width;
     
     if(el->height < 0) el->calc_h
-      = (float)el->parent->calc_w * ((float)el->height / 100.0);
+      = (float)el->parent->calc_w * ((float)el->height / -100.0);
     else el->calc_h = el->height;
                                     
     // TODO: logic for dealing with pos/dim depending on parent layout
     
     switch(el->parent->layout) {
       case 0: // free
-        el->calc_x = el->parent->calc_x + el->x;
-        el->calc_y = el->parent->calc_y + el->y;
+        if(el->x < 0) el->calc_x += el->parent->calc_w + el->x;
+        else el->calc_x += el->x;
+        
+        if(el->y < 0) el->calc_y += el->parent->calc_h + el->y;
+        else el->calc_y += el->y;
         break;
       case 1: // snapped grid
         el->calc_x = el->parent->calc_x +
@@ -354,7 +354,8 @@ void el_calc(El *el) { // pass in root first!!!!
           El *child = el->child;
           el->calc_h = 0;
           // see which child, if any, is the tallest.
-          while(child) if(child->height > el->calc_h) el->calc_h = child->height;
+          while(child) if(child->height > el->calc_h)
+            el->calc_h = child->height;
         }
         if(el->lSib) {
           el->calc_y = el->lSib->calc_y + el->lSib->calc_h;
@@ -394,8 +395,9 @@ void el_draw(El *el, SDL_Renderer *renderer) {
     el->calc_h
   };
   
-  printf("drawing el type %i x: %i y: %i w: %i h: %i layout: %i\n",
-         el->type, el_rect.x, el_rect.y, el_rect.w, el_rect.h, el->layout);
+  printf("drawing el type %i x: %i y: %i w: %i h: %i layout: %i parent:%i\n",
+         el->type, el_rect.x, el_rect.y, el_rect.w, el_rect.h, el->layout,
+         el->parent ? el->parent->type : 0);
   
   switch(el->type) {
     case 0:

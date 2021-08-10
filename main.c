@@ -48,13 +48,16 @@ int main(/*int argc, char **argv*/) {
   
   // Construct a test window
   El *testWin = el_make(2); {
+    testWin->x = 32;
+    testWin->y = 64;
     testWin->layout = 5;
     El *testWin_sidebar = el_make(1); {
       testWin_sidebar->layout = 4;
       testWin_sidebar->scrollable = 1;
+      testWin_sidebar->cellHeight = 32;
       for(int i = 0; i < 8; i++) {
         El *sidebar_item = el_make(1);
-        sidebar_item->height = 32;
+        sidebar_item->width = -100;
         el_adopt(testWin_sidebar, sidebar_item);
       }
       el_adopt(testWin, testWin_sidebar);
