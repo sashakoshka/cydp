@@ -346,6 +346,7 @@ void el_calc(El *el) { // pass in root first!!!!
           if(el->lSib) el->calc_x = el->lSib->calc_x + el->lSib->calc_w;
         }
         // TODO: handle alignments by changing el->calc_y
+        
         break;
       case 4: // vertical list
         if(el->parent->cellHeight) {
@@ -394,7 +395,7 @@ void el_draw(El *el, SDL_Renderer *renderer) {
     el->calc_h
   };
   
-  printf("drawing el type %i x: %i y: %i w: %i h: %i layout: %i parent:%i\n",
+  printf("drawing el type %i x: %i y: %i w: %i h: %i layout: %i parent: %i\n",
          el->type, el_rect.x, el_rect.y, el_rect.w, el_rect.h, el->layout,
          el->parent ? el->parent->type : 0);
   
