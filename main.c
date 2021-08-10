@@ -54,10 +54,16 @@ int main(/*int argc, char **argv*/) {
     El *testWin_sidebar = el_make(1); {
       testWin_sidebar->layout = 4;
       testWin_sidebar->scrollable = 1;
-      testWin_sidebar->cellHeight = 32;
       for(int i = 0; i < 8; i++) {
         El *sidebar_item = el_make(1);
         sidebar_item->width = -100;
+        sidebar_item->layout = 3;
+        sidebar_item->alignment = 4;
+        El *item_icon = el_make(4); {
+          item_icon->width  = 32;
+          item_icon->height = 32;
+          el_adopt(sidebar_item, item_icon);
+        }
         el_adopt(testWin_sidebar, sidebar_item);
       }
       el_adopt(testWin, testWin_sidebar);

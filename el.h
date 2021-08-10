@@ -143,6 +143,8 @@ struct _El {
     
     when these values are negative, they are treated as a percent. for example,
     -100 would stretch the element.
+    
+    TODO: implement unit system instead of this
   */
   int width;
   int height;
@@ -330,7 +332,7 @@ void el_calc(El *el) { // pass in root first!!!!
         el->calc_y = el->parent->calc_y + el->y * el->parent->cellHeight;
         break;
       case 3: // horizontal list
-        // the height can be left as is
+        // TODO: update this to make it match vertical list
         if(el->parent->cellWidth) el->calc_w = el->parent->cellWidth;
         else {
           El *child = el->child;
@@ -348,22 +350,21 @@ void el_calc(El *el) { // pass in root first!!!!
         el->calc_y = el->parent->y;
         break;
       case 4: // vertical list
-        // the width can be left as is
-        if(el->parent->cellHeight) el->calc_h = el->parent->cellHeight;
-        else {
+        if(el->parent->cellHeight) {
+          el->calc_h = el->parent->cellHeight;
+          if(el->lSib) el->calc_y = el->lSib->calc_y + el->parent->cellHeight;
+        } else {
           El *child = el->child;
           el->calc_h = 0;
           // see which child, if any, is the tallest.
-          while(child) if(child->height > el->calc_h)
-            el->calc_h = child->height;
+          while(child) {
+            if(child->height > el->calc_h) el->calc_h = child->height;
+            child = child->rSib;
+          }
+          if(el->lSib) el->calc_y = el->lSib->calc_y + el->lSib->calc_h;
         }
-        if(el->lSib) {
-          el->calc_y = el->lSib->calc_y + el->lSib->calc_h;
-        } else {
-          el->calc_y = el->parent->calc_y;
-        }
-        // TODO: handle alignments instead of this
-        el->calc_x = el->parent->x;
+        // TODO: handle alignments by changing el->calc_x
+        
         break;
       case 5: // sidebar
         el->calc_h = el->parent->calc_h;
