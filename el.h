@@ -332,22 +332,20 @@ void el_calc(El *el) { // pass in root first!!!!
         el->calc_y = el->parent->calc_y + el->y * el->parent->cellHeight;
         break;
       case 3: // horizontal list
-        // TODO: update this to make it match vertical list
-        if(el->parent->cellWidth) el->calc_w = el->parent->cellWidth;
-        else {
-          El *child = el->child;
-          el->calc_w = 0;
-          /* see which child, if any, is the widest. do not nest elements with
-          auto dimensions! this is why. */
-          while(child) if(child->width > el->calc_w) el->calc_w = child->width;
-        }
-        if(el->lSib) {
-          el->calc_x = el->lSib->calc_x + el->lSib->calc_w;
+        if(el->parent->cellWidth) {
+          el->calc_w = el->parent->cellWidth;
+          if(el->lSib) el->calc_x = el->lSib->calc_x + el->parent->cellWidth;
         } else {
-          el->calc_x = el->parent->calc_x;
+          El *child = el->child;
+          el->calc_w = el->width;
+          // see which child, if any, is the tallest.
+          while(child) {
+            if(child->width > el->calc_w) el->calc_w = child->width;
+            child = child->rSib;
+          }
+          if(el->lSib) el->calc_x = el->lSib->calc_x + el->lSib->calc_w;
         }
-        // TODO: handle alignments instead of this
-        el->calc_y = el->parent->y;
+        // TODO: handle alignments by changing el->calc_y
         break;
       case 4: // vertical list
         if(el->parent->cellHeight) {
@@ -355,7 +353,7 @@ void el_calc(El *el) { // pass in root first!!!!
           if(el->lSib) el->calc_y = el->lSib->calc_y + el->parent->cellHeight;
         } else {
           El *child = el->child;
-          el->calc_h = 0;
+          el->calc_h = el->height;
           // see which child, if any, is the tallest.
           while(child) {
             if(child->height > el->calc_h) el->calc_h = child->height;
